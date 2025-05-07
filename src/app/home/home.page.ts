@@ -26,7 +26,24 @@ import { AuthService } from '../auth.service';
     FormsModule, CommonModule
   ],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit{
+
+  constructor(private router: Router) { }
+
+  ngOnInit() {
+  }
+
+  onLogin() {
+    this.router.navigate(['/login']);
+  }
+
+  onSignUp() {
+    this.router.navigate(['/signup']);
+  }
+
+  /*
+
+  Esto esta comentado porque no se usa, pero lo dejo por si acaso, y lo ocuparemos en el futuro capaz :D
 
   tasks$!: Observable<Task[]>;
   newTaskName: string = '';
@@ -132,5 +149,5 @@ export class HomePage implements OnInit {
       });
       await alert.present();
     }
-  }
+  }*/
 }

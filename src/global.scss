@@ -1,3 +1,8 @@
+@import 'tailwindcss/base';
+
+@import 'tailwindcss/components';
+
+@import 'tailwindcss/utilities';
 /*
  * App Global CSS
  * ----------------------------------------------------------------------------
@@ -35,3 +40,31 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+/*
+estilo que habia creado meel para los botones pero solo use algunas cosas de ahi version flowbite
+.pixel-button {
+    background-color: #ffcce0; 
+    color: #cc3366; 
+    font-family: 'Press Start 2P', cursive; 
+    font-size: 12px;
+    padding: 10px 10px;
+    border: 4px solid #cc3366; 
+    box-shadow: 4px 4px 0 #cc3366;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.1s ease-in-out;
+    
+    
+    border-radius: 3px; 
+  }
+  
+  .pixel-button:hover {
+    background-color: #ff99cc; 
+    box-shadow: 2px 2px 0 #cc3366;
+  }
+  */
+  
+  body {
+    font-family: 'Press Start 2P', monospace;
+  }
+  

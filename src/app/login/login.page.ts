@@ -5,6 +5,11 @@ import { IonContent, IonHeader, IonToolbar, IonTitle, IonInput, IonItem, IonList
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
 import { AuthService } from '../auth.service';
+import { Task } from '../task.service';
+import { TaskService } from '../task.service';
+import { Observable, of } from 'rxjs';
+import { NgModule } from '@angular/core';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -59,7 +64,7 @@ export class LoginPage implements OnInit {
   }
 
   onSignup() {
-    this.router.navigate(['/sign-up']);
+    this.router.navigate(['/signup']);
   }
 
   onReset() {
