@@ -1,0 +1,72 @@
+<ion-content [fullscreen]="true" class="flex justify-center items-center">
+  <section       class="font-press-start h-full w-full min-h-screen bg-center bg-cover bg-no-repeat bg-[url('https://cdn.lospec.com/gallery/cats-in-the-blue-lake-731334.gif')] bg-gray-700 bg-blend-multiply flex items-center justify-center"
+>
+    <div class="w-full max-w-screen-xl px-4 py-8 lg:py-16 flex justify-center">
+      <div class="w-full lg:max-w-xl p-6 space-y-8 sm:p-8 bg-white rounded-lg shadow-xl dark:bg-gray-800">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+          Bienvenido devuelta a PAWTH!
+        </h2>
+        <form class="mt-8 space-y-6">
+          <div>
+            <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+            <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" placeholder="name@company.com" required />
+          </div>
+          <div>
+            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Contraseña</label>
+            <input type="password" name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white" required />
+          </div>
+          <div class="flex flex items-center">
+            
+            
+            <a (click)="onReset()" class="ms-auto text-sm font-medium text-blue-600 hover:underline dark:text-blue-500">Perdiste tu contrasenia?</a>
+          </div>
+          <button type="submit" class="w-full px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Inicia sesion</button>
+          <div class="text-sm font-medium text-gray-900 dark:text-white">
+            No tienes cuenta? <a (click)="onSignup()" class="text-blue-600 hover:underline dark:text-blue-500">Crear cuenta</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</ion-content>
+
+<!--
+<div id="content" class="text-center">
+  <ion-label style="display: inline-block;
+  margin: 30px;
+  background-color: #eb87b9;
+  border: 2px solid #1E90FF;
+  color: #113152;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(255, 94, 0, 0.295);
+  box-shadow: 2px 2px 5px rgba(255, 153, 0, 0.247);">Inicia sesion para ver tus canciones!</ion-label>
+  <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+
+    
+    <ion-label class="text-gray-400 text-lg font-semibold">Correo</ion-label><br>
+    <input class="border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400" type="email"
+      name="email" id="email" required placeholder="correo@email.com" [(ngModel)]="email" #emailModel="ngModel"><br>
+    <div *ngIf="emailModel.invalid && emailModel.touched" style="color:red;">Por favor ingresa un correo válido</div>
+
+    
+    <ion-label class="text-gray-400 text-lg font-semibold">Contraseña</ion-label><br>
+    <input name="password" id="password" [(ngModel)]="password"
+      class="border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400" type="password" required
+      placeholder="........."><br><br>
+
+    
+    <button
+      class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-semibold font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+      expand="full" type="submit" [disabled]="loginForm.invalid">Iniciar Sesión</button>
+  </form>
+
+  <button (click)="onReset()"
+    class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+    expand="full">Reinicia tu contraseña</button>
+
+  <button (click)="onSignup()"
+    class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+    expand="full">Registrate</button>
+</div> -->

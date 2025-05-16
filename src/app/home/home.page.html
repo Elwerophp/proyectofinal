@@ -1,47 +1,50 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Login</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <div id="content" class="text-center">
-    <ion-label style="display: inline-block;
-    margin: 30px;
-    background-color: #eb87b9;
-    border: 2px solid #1E90FF;
-    color: #113152;
-    padding: 4px 8px;
-    border-radius: 5px;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(255, 94, 0, 0.295);
-    box-shadow: 2px 2px 5px rgba(255, 153, 0, 0.247);">Inicia sesion para ver tus canciones!</ion-label>
-    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-
-      <!-- Email -->
-      <ion-label class="text-gray-400 text-lg font-semibold">Correo</ion-label><br>
-      <input class="border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400" type="email"
-        name="email" id="email" required placeholder="correo@email.com" [(ngModel)]="email" #emailModel="ngModel"><br>
-      <div *ngIf="emailModel.invalid && emailModel.touched" style="color:red;">Por favor ingresa un correo válido</div>
-
-      <!-- Contraseña -->
-      <ion-label class="text-gray-400 text-lg font-semibold">Contraseña</ion-label><br>
-      <input name="password" id="password" [(ngModel)]="password"
-        class="border rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400" type="password" required
-        placeholder="........."><br><br>
-
-      <!-- Botón de Iniciar Sesión -->
-      <button
-        class="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-semibold font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-        expand="full" type="submit" [disabled]="loginForm.invalid">Iniciar Sesión</button>
-    </form>
-
-    <button (click)="onReset()"
-      class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-      expand="full">Reinicia tu contraseña</button>
-
-    <button (click)="onSignup()"
-      class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-      expand="full">Registrate</button>
-  </div>
-</ion-content>
+<ion-content [fullscreen]="true" class="!p-0">
+    <section
+      class="h-full w-full min-h-screen bg-center bg-cover bg-no-repeat bg-[url('https://cdn.lospec.com/gallery/cats-in-the-blue-lake-731334.gif')] bg-gray-700 bg-blend-multiply flex items-center justify-center"
+    >
+      <div class="px-4 mx-auto max-w-screen-xl text-center py-12 lg:py-24">
+        <!-- Logo de la app -->
+        <div class="mb-6">
+          <img src="assets/appLogo1.png" alt="Logo de PAWTH" class="mx-auto h-" />
+        </div>
+        
+        <!-- Título y texto -->
+        <h1 class="font-press-start mb-4 text-4xl font-extrabold tracking-tight leading-none text-white md:text-5xl lg:text-6xl">
+          Bienvenido a PAWTH
+        </h1>
+        <p class="font-press-start mb-8 text-lg font-normal text-gray-300 lg:text-xl sm:px-16 lg:px-48">
+          texto llamativo/slogan aqui
+        </p>
+        
+        <!-- Botones -->
+        <div class="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-y-0">
+          <a (click)="onSignUp()"
+             class="cursor-pointer font-press-start inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center text-white rounded-lg bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900">
+            Registrate
+            <svg
+              class="w-3.5 h-3.5 ms-2 rtl:rotate-180"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 10"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M1 5h12m0 0L9 1m4 4L9 9"
+              />
+            </svg>
+          </a>
+          <a
+            (click)="onLogin()"
+            class="m-5 font-press-start inline-flex justify-center items-center text-base text-white bg-transparent border-4 border-white shadow-[4px_4px_0_#ffffff] hover:shadow-[2px_2px_0_#ffffff] px-5 py-3 rounded-sm transition-all duration-100 cursor-pointer hover:bg-gray-100 hover:text-gray-900 focus:ring-4 focus:ring-gray-400"
+          >
+            Inicia sesión
+          </a>
+        </div>
+      </div>
+    </section>
+  </ion-content>
+  
