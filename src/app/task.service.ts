@@ -33,5 +33,4 @@ export interface Task {
   id?: string;
   name: string;
   author: string
-  link: string
 }

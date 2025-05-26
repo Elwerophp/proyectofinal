@@ -41,6 +41,10 @@ export const routes: Routes = [
   {
     path: 'tests-tasks',
     loadComponent: () => import('./tests-tasks/tests-tasks.page').then(m => m.TestsTasksPage)
+  },  {
+    path: 'name-select',
+    loadComponent: () => import('./name-select/name-select.page').then( m => m.NameSelectPage)
   },
+
 
 ];

@@ -25,14 +25,57 @@ import { AuthService } from '../auth.service';
     FormsModule, CommonModule]
 })
 export class SignupPage implements OnInit {
+  email: string = ''; // Declare the email property
+  password: string = ''; // Declare the password property
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private alertController: AlertController, private authService: AuthService) { }
 
   ngOnInit() {
   }
+  
+  async onSubmit() {
+    console.log('Email ingresado:', this.email); // Depuración
+    console.log('¿Es email válido?', this.validateEmail(this.email));
 
-  onSignUp() {
-    this.router.navigate(['/signup']);
+    //verificar si el email es valido
+    if (!this.validateEmail(this.email)) {
+      const alert = await this.alertController.create({
+        header: 'Invalid Email',
+        message: 'Please enter a valid email address.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      return; // Evita que continúe con el registro si el email no es válido
+    }
+
+    try {
+      await this.authService.register(this.email, this.password);
+      const alert = await this.alertController.create({
+        header: 'Signup Success',
+        message: 'You have signed up successfully!',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Firebase Error:', error); // Para ver el error en la consola
+      const alert = await this.alertController.create({
+        header: 'Error',
+        message: 'An error ocurred during signup.', //nose porque siempre me aparece que ocurre un error durante el signup, pero ya esta implementado todo lo de Firebase y deberia servir
+        buttons: ['OK'],
+      });
+      await alert.present();
+    }
+
+
+  }
+
+  validateEmail(email: string): boolean {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email.trim());
+  }
+  onPetSelect() {
+    this.router.navigate(['/pet-select']); // Redirige a la página de login
   }
 
 }
