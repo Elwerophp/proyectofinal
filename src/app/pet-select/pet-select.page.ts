@@ -66,6 +66,7 @@ export class PetSelectPage implements OnInit {
     }
   }
 
+<<<<<<< HEAD
   async selectPet(pet: string) {
     if (!this.petName.trim()) {
       const alert = await this.alertController.create({
@@ -88,6 +89,20 @@ export class PetSelectPage implements OnInit {
       });
       await alert.present();
 
+=======
+  async selectPet(pettype: string) {
+    try {
+      await this.taskService.setUserPet(pettype);
+      this.selectedPet = pettype;
+
+      const alert = await this.alertController.create({
+        header: 'Mascota seleccionada',
+        message: `Has seleccionado: ${pettype}. Se ha guardado en tu cuenta.`,
+        buttons: ['OK'],
+      });
+      await alert.present();
+      // Redirigir a la página name-select
+>>>>>>> 9f0133b484ecf8083258a3c7e42379632996d519
       this.router.navigate(['/name-select']);
     } catch (error) {
       console.error('Error al guardar la mascota:', error);
@@ -99,9 +114,12 @@ export class PetSelectPage implements OnInit {
       await alert.present();
     }
   }
+<<<<<<< HEAD
 
 
   onDasboard() {
     this.router.navigate(['/dashboard']);
   }
+=======
+>>>>>>> 9f0133b484ecf8083258a3c7e42379632996d519
 }
