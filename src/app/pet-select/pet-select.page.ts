@@ -1,7 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonToolbar, IonTitle, IonInput, IonItem, IonList, IonLabel, IonButton, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonInput,
+  IonItem,
+  IonList,
+  IonLabel,
+  IonButton,
+  IonGrid,
+  IonRow,
+  IonCol
+} from '@ionic/angular/standalone';
 import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
@@ -32,15 +45,16 @@ import { TaskService } from '../task.service';
 })
 export class PetSelectPage implements OnInit {
   selectedPet: string | null = null; // Para almacenar la mascota seleccionada
+  petName: string = ''; // Aquí agregamos la propiedad para el nombre de la mascota
 
   constructor(
     private alertController: AlertController,
     private taskService: TaskService,
-    private router: Router // Agregado para redirección
-  ) {}
+    private router: Router
+  ) { }
 
   ngOnInit() {
-    this.loadSelectedPet(); // Cargar la mascota seleccionada al iniciar la página
+    this.loadSelectedPet();
   }
 
   async loadSelectedPet() {
@@ -52,19 +66,28 @@ export class PetSelectPage implements OnInit {
     }
   }
 
-  async selectPet(petName: string) {
+  async selectPet(pet: string) {
+    if (!this.petName.trim()) {
+      const alert = await this.alertController.create({
+        header: 'Nombre requerido',
+        message: 'Por favor ingresa un nombre para tu mascota antes de seleccionarla.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      return; // Salimos de la función sin guardar ni redirigir
+    }
+
     try {
-      await this.taskService.setUserPet(petName);
-      this.selectedPet = petName;
+      await this.taskService.setUserPet(pet); // Guardar tipo de mascota
+      this.selectedPet = pet;
 
       const alert = await this.alertController.create({
         header: 'Mascota seleccionada',
-        message: `Has seleccionado: ${petName}. Se ha guardado en tu cuenta.`,
+        message: `Has seleccionado: ${pet}. Se ha guardado en tu cuenta con el nombre ${this.petName}.`,
         buttons: ['OK'],
       });
       await alert.present();
 
-      // Redirigir a la página name-select
       this.router.navigate(['/name-select']);
     } catch (error) {
       console.error('Error al guardar la mascota:', error);
@@ -76,8 +99,9 @@ export class PetSelectPage implements OnInit {
       await alert.present();
     }
   }
-   onDasboard() {
-    this.router.navigate(['/dashboard']); // Redirige a la página de dashboard
-  }
 
+
+  onDasboard() {
+    this.router.navigate(['/dashboard']);
+  }
 }
