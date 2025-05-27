@@ -52,18 +52,17 @@ export class PetSelectPage implements OnInit {
     }
   }
 
-  async selectPet(petName: string) {
+  async selectPet(pettype: string) {
     try {
-      await this.taskService.setUserPet(petName);
-      this.selectedPet = petName;
+      await this.taskService.setUserPet(pettype);
+      this.selectedPet = pettype;
 
       const alert = await this.alertController.create({
         header: 'Mascota seleccionada',
-        message: `Has seleccionado: ${petName}. Se ha guardado en tu cuenta.`,
+        message: `Has seleccionado: ${pettype}. Se ha guardado en tu cuenta.`,
         buttons: ['OK'],
       });
       await alert.present();
-
       // Redirigir a la página name-select
       this.router.navigate(['/name-select']);
     } catch (error) {
@@ -76,8 +75,4 @@ export class PetSelectPage implements OnInit {
       await alert.present();
     }
   }
-   onDasboard() {
-    this.router.navigate(['/dashboard']); // Redirige a la página de dashboard
-  }
-
 }
