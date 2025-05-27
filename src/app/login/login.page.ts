@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonToolbar, IonTitle, IonInput, IonItem, IonList, IonLabel, IonButton } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-import { AuthService } from '../auth.service';
+// import { AuthService } from '../auth.service';
 import { Task } from '../task.service';
 import { TaskService } from '../task.service';
 import { Observable, of } from 'rxjs';
@@ -69,5 +69,21 @@ export class LoginPage implements OnInit {
 
   onReset() {
     this.router.navigate(['/forgot-password']);
+  }
+}
+
+import { Injectable } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  async login(email: string, password: string): Promise<void> {
+    // TODO: Replace with real authentication logic
+    if (email === 'test@example.com' && password === 'password') {
+      return Promise.resolve();
+    } else {
+      return Promise.reject('Invalid credentials');
+    }
   }
 }

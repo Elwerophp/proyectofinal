@@ -56,18 +56,21 @@ export class SignupPage implements OnInit {
         buttons: ['OK'],
       });
       await alert.present();
-      this.router.navigate(['/login']);
-    } catch (error) {
+      // Redirige a la selección de mascota después del registro exitoso
+      this.router.navigate(['/pet-select']);
+    } catch (error: any) {
       console.error('Firebase Error:', error); // Para ver el error en la consola
+      let message = 'An error ocurred during signup.';
+      if (error.code === 'auth/email-already-in-use') {
+        message = 'This email is already registered. Please use another email or log in.';
+      }
       const alert = await this.alertController.create({
         header: 'Error',
-        message: 'An error ocurred during signup.', //nose porque siempre me aparece que ocurre un error durante el signup, pero ya esta implementado todo lo de Firebase y deberia servir
+        message,
         buttons: ['OK'],
       });
       await alert.present();
     }
-
-
   }
 
   validateEmail(email: string): boolean {
@@ -75,7 +78,7 @@ export class SignupPage implements OnInit {
     return emailPattern.test(email.trim());
   }
   onPetSelect() {
-    this.router.navigate(['/pet-select']); // Redirige a la página de login
+    this.router.navigate(['/pet-select']); // Redirige a la página de selección de mascotas
   }
 
 }

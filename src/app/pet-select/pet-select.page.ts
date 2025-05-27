@@ -6,6 +6,7 @@ import { AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
 import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
+import { TaskService } from '../task.service';
 
 @Component({
   selector: 'app-pet-select',
@@ -34,8 +35,7 @@ export class PetSelectPage implements OnInit {
 
   constructor(
     private alertController: AlertController,
-    private firestore: Firestore,
-    private auth: Auth,
+    private taskService: TaskService,
     private router: Router // Agregado para redirección
   ) {}
 
@@ -44,46 +44,18 @@ export class PetSelectPage implements OnInit {
   }
 
   async loadSelectedPet() {
-    const user = this.auth.currentUser; // Obtener el usuario actual
-    if (!user) {
-      console.error('No se encontró un usuario autenticado.');
-      return;
-    }
-
     try {
-      const userDocRef = doc(this.firestore, `users/${user.uid}`);
-      const userDoc = await getDoc(userDocRef);
-
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        this.selectedPet = userData['selectedPet'] || null; // Cargar la mascota seleccionada
-        console.log(`Mascota cargada: ${this.selectedPet}`);
-      } else {
-        console.log('No se encontró un documento para este usuario.');
-      }
+      this.selectedPet = await this.taskService.getUserPet();
+      console.log(`Mascota cargada: ${this.selectedPet}`);
     } catch (error) {
       console.error('Error al cargar la mascota seleccionada:', error);
     }
   }
 
   async selectPet(petName: string) {
-    const user = this.auth.currentUser; // Obtener el usuario actual
-    if (!user) {
-      const alert = await this.alertController.create({
-        header: 'Error',
-        message: 'No se encontró un usuario autenticado.',
-        buttons: ['OK'],
-      });
-      await alert.present();
-      return;
-    }
-
     try {
-      // Guardar la mascota seleccionada en Firestore
-      const userDocRef = doc(this.firestore, `users/${user.uid}`);
-      await setDoc(userDocRef, { selectedPet: petName }, { merge: true });
-
-      this.selectedPet = petName; // Actualizar la mascota seleccionada localmente
+      await this.taskService.setUserPet(petName);
+      this.selectedPet = petName;
 
       const alert = await this.alertController.create({
         header: 'Mascota seleccionada',
@@ -104,4 +76,8 @@ export class PetSelectPage implements OnInit {
       await alert.present();
     }
   }
+   onDasboard() {
+    this.router.navigate(['/dashboard']); // Redirige a la página de dashboard
+  }
+
 }
