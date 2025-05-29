@@ -35,10 +35,7 @@ export class SignupPage implements OnInit {
   }
   
   async onSubmit() {
-    console.log('Email ingresado:', this.email); // Depuración
-    console.log('¿Es email válido?', this.validateEmail(this.email));
-
-    //verificar si el email es valido
+    // Validación básica email y nickname
     if (!this.validateEmail(this.email)) {
       const alert = await this.alertController.create({
         header: 'Invalid Email',
@@ -46,21 +43,34 @@ export class SignupPage implements OnInit {
         buttons: ['OK'],
       });
       await alert.present();
-      return; // Evita que continúe con el registro si el email no es válido
+      return;
     }
-
+  
+    if (!this.nickname.trim()) {
+      const alert = await this.alertController.create({
+        header: 'Nickname Required',
+        message: 'Please enter a nickname.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      return;
+    }
+  
     try {
-      await this.authService.register(this.email, this.password);
+      // Ahora pasamos el nickname a register
+      await this.authService.register(this.email, this.password, this.nickname);
+  
       const alert = await this.alertController.create({
         header: 'Signup Success',
         message: 'You have signed up successfully!',
         buttons: ['OK'],
       });
       await alert.present();
+  
       // Redirige a la selección de mascota después del registro exitoso
       this.router.navigate(['/pet-select']);
     } catch (error: any) {
-      console.error('Firebase Error:', error); // Para ver el error en la consola
+      console.error('Firebase Error:', error);
       let message = 'An error ocurred during signup.';
       if (error.code === 'auth/email-already-in-use') {
         message = 'This email is already registered. Please use another email or log in.';
