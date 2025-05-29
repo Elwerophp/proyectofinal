@@ -25,4 +25,8 @@ async logout() {
   return await signOut(this.auth);
 }
 
+isLoggedIn(): boolean {
+  return !!this.auth.currentUser;
+}
+
 }
