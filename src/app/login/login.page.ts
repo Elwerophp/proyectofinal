@@ -4,11 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonToolbar, IonTitle, IonInput, IonItem, IonList, IonLabel, IonButton } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
-// import { AuthService } from '../auth.service';
 import { Task } from '../task.service';
 import { TaskService } from '../task.service';
 import { Observable, of } from 'rxjs';
 import { NgModule } from '@angular/core';
+import { AuthService } from '../auth.service'; //descomente esto tmbb -Mel
 
 @Component({
   selector: 'app-login',
@@ -27,6 +27,7 @@ export class LoginPage implements OnInit {
   }
 
   async onSubmit() {
+
     if (!this.validateEmail(this.email) || !this.password) {
       const alert = await this.alertController.create({
         header: 'Error',
@@ -45,7 +46,7 @@ export class LoginPage implements OnInit {
         buttons: ['OK'],
       });
       await alert.present();
-      this.router.navigate(['/home']);
+      this.router.navigate(['/dashboard']);
     } catch (error) {
       console.error('Error en login:', error);
       const alert = await this.alertController.create({
@@ -72,6 +73,7 @@ export class LoginPage implements OnInit {
   }
 }
 
+/* Voy a comentar esto por ahora, pq nose para q es -Mel
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -86,4 +88,4 @@ export class AuthService {
       return Promise.reject('Invalid credentials');
     }
   }
-}
+}*/

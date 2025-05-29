@@ -27,6 +27,7 @@ import { AuthService } from '../auth.service';
 export class SignupPage implements OnInit {
   email: string = ''; // Declare the email property
   password: string = ''; // Declare the password property
+  nickname: string = ''; // Declare the nickname property
 
   constructor(private router: Router, private alertController: AlertController, private authService: AuthService) { }
 
@@ -78,7 +79,7 @@ export class SignupPage implements OnInit {
     return emailPattern.test(email.trim());
   }
   onPetSelect() {
-    this.router.navigate(['/pet-select']); // Redirige a la página de selección de mascotas
+    this.router.navigate(['/pet-select']); 
   }
 
 }
