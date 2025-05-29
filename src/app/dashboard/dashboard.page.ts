@@ -15,6 +15,8 @@ import { Router } from '@angular/router';
 export class DashboardPage implements OnInit {
 
   userPet: string = '';
+  petName: string = '';
+  doorIsOpen: boolean = false;
 
 
   constructor(
@@ -30,6 +32,8 @@ export class DashboardPage implements OnInit {
       return;
     }
     this.userPet = pet;
+    const name = await this.taskService.getPetName();
+    this.petName = name || 'Your Pet';
   }
 
   getPetImageUrl(pet: string): string {
