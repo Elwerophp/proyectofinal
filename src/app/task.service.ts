@@ -36,17 +36,26 @@ export class TaskService {
     await setDoc(userDocRef, { selectedPet: petName }, { merge: true });
   }
 
-  async getUserPet(): Promise<string | null> {
+  async getUserPet(): Promise<string> {
     const user = this.auth.currentUser;
     if (!user) throw new Error('No authenticated user');
+
     const userDocRef = doc(this.firestore, `users/${user.uid}`);
     const userDoc = await getDoc(userDocRef);
+
     if (userDoc.exists()) {
       const data = userDoc.data();
-      return data['selectedPet'] || null;
+      const selectedPet = data['selectedPet'];
+      if (typeof selectedPet === 'string') {
+        return selectedPet;
+      } else {
+        throw new Error('selectedPet is missing or not a string');
+      }
     }
-    return null;
+
+    throw new Error('User document does not exist');
   }
+
 
   async setPetName(petName: string) {
     const user = this.auth.currentUser;
