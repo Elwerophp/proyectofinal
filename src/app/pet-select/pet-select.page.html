@@ -17,36 +17,49 @@
 
     <!-- Recuadros de mascotas -->
     <div class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-3 gap-8 px-4 mb-12">
-      <div
+
+      <div [ngClass]="{'ring-4 ring-green-400': selectedPet === 'Gato negro'}"
         class="bg-white bg-opacity-70 p-6 rounded-2xl shadow-2xl text-center transform transition duration-300 hover:scale-105">
         <img src="assets/Dashboard/blackCat/blackCat_normal.png" alt="MascotaB" class="w-full h-auto mb-6" />
         <button
           class="w-full px-6 py-4 text-lg font-medium text-white bg-blue-700 rounded-xl hover:bg-blue-800 focus:ring-4 focus:ring-blue-300"
-          (click)="selectPet('Mascota B')">
+          (click)="selectPet('Gato negro')">
           Seleccionar
         </button>
       </div>
-      <div
+
+      <div [ngClass]="{'ring-4 ring-green-400': selectedPet === 'Gato gris'}"
         class="bg-white bg-opacity-70 p-6 rounded-2xl shadow-2xl text-center transform transition duration-300 hover:scale-105">
         <img src="assets/Dashboard/grayCat/grayCat_normal.png" alt="MascotaG" class="w-full h-auto mb-6" />
         <button
           class="w-full px-6 py-4 text-lg font-medium text-white bg-blue-700 rounded-xl hover:bg-blue-800 focus:ring-4 focus:ring-blue-300"
-          (click)="selectPet('Mascota G')">
+          (click)="selectPet('Gato gris')">
           Seleccionar
         </button>
       </div>
-      <div
+
+      <div [ngClass]="{'ring-4 ring-green-400': selectedPet === 'Gato naranja'}"
         class="bg-white bg-opacity-70 p-6 rounded-2xl shadow-2xl text-center transform transition duration-300 hover:scale-105">
         <img src="assets/Dashboard/orangeCat/orangeCat_normal.png" alt="MascotaO" class="w-full h-auto mb-6" />
         <button
           class="w-full px-6 py-4 text-lg font-medium text-white bg-blue-700 rounded-xl hover:bg-blue-800 focus:ring-4 focus:ring-blue-300"
-          (click)="selectPet('Mascota O')">
+          (click)="selectPet('Gato naranja')">
           Seleccionar
         </button>
       </div>
     </div>
 
+    <div *ngIf="selectedPet && petName" class="text-white text-lg mt-4 text-center">
+      Tu mascota actual es <strong>{{ selectedPet }}</strong> y se llama <strong>{{ petName }}</strong>.
+    </div>
 
+    <div *ngIf="selectedPet" class="mt-4 text-center">
+      <button
+        class=" px-6 py-4 text-lg font-bold text-white bg-green-600 rounded-xl hover:bg-green-700 focus:ring-4 focus:ring-green-300 transition"
+        (click)="onDashboard()">
+        Continuar
+      </button>
+    </div>
 
 
   </section>

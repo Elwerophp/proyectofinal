@@ -44,8 +44,8 @@ import { TaskService } from '../task.service';
   ]
 })
 export class PetSelectPage implements OnInit {
-  selectedPet: string | null = null; // Para almacenar la mascota seleccionada
-  petName: string = ''; // Aquí agregamos la propiedad para el nombre de la mascota
+  selectedPet: string | null = null; 
+  petName: string = ''; 
 
   constructor(
     private alertController: AlertController,
@@ -59,8 +59,13 @@ export class PetSelectPage implements OnInit {
 
   async loadSelectedPet() {
     try {
-      this.selectedPet = await this.taskService.getUserPet();
-      console.log(`Mascota cargada: ${this.selectedPet}`);
+      const pet = await this.taskService.getUserPet();
+      if (pet) {
+        
+        this.router.navigate(['/dashboard']);
+        return;
+      }
+      this.selectedPet = null; 
     } catch (error) {
       console.error('Error al cargar la mascota seleccionada:', error);
     }
@@ -74,21 +79,24 @@ export class PetSelectPage implements OnInit {
         buttons: ['OK'],
       });
       await alert.present();
-      return; // Salimos de la función sin guardar ni redirigir
+      return;
     }
-
+  
     try {
-      await this.taskService.setUserPet(pet); // Guardar tipo de mascota
+      
+      await this.taskService.setUserPet(pet);
+      await this.taskService.setPetName(this.petName);
       this.selectedPet = pet;
-
+  
       const alert = await this.alertController.create({
         header: 'Mascota seleccionada',
-        message: `Has seleccionado: ${pet}. Se ha guardado en tu cuenta con el nombre ${this.petName}.`,
+        message: `Has seleccionado: ${pet}. Se ha guardado con el nombre ${this.petName}.`,
         buttons: ['OK'],
       });
       await alert.present();
-
-      this.router.navigate(['/name-select']);
+  
+      
+  
     } catch (error) {
       console.error('Error al guardar la mascota:', error);
       const alert = await this.alertController.create({
@@ -99,9 +107,10 @@ export class PetSelectPage implements OnInit {
       await alert.present();
     }
   }
+  
 
 
-  onDasboard() {
+  onDashboard() {
     this.router.navigate(['/dashboard']);
   }
 }
