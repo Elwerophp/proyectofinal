@@ -25,9 +25,9 @@ import { AuthService } from '../auth.service';
     FormsModule, CommonModule]
 })
 export class SignupPage implements OnInit {
-  email: string = ''; // Declare the email property
-  password: string = ''; // Declare the password property
-  nickname: string = ''; // Declare the nickname property
+  email: string = ''; 
+  password: string = '';
+  nickname: string = ''; 
 
   constructor(private router: Router, private alertController: AlertController, private authService: AuthService) { }
 
@@ -35,7 +35,7 @@ export class SignupPage implements OnInit {
   }
   
   async onSubmit() {
-    // Validación básica email y nickname
+    
     if (!this.validateEmail(this.email)) {
       const alert = await this.alertController.create({
         header: 'Invalid Email',
@@ -57,7 +57,7 @@ export class SignupPage implements OnInit {
     }
   
     try {
-      // Ahora pasamos el nickname a register
+      
       await this.authService.register(this.email, this.password, this.nickname);
   
       const alert = await this.alertController.create({
@@ -67,7 +67,6 @@ export class SignupPage implements OnInit {
       });
       await alert.present();
   
-      // Redirige a la selección de mascota después del registro exitoso
       this.router.navigate(['/pet-select']);
     } catch (error: any) {
       console.error('Firebase Error:', error);

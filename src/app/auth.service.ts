@@ -11,7 +11,7 @@ export class AuthService {
     const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
     const uid = userCredential.user?.uid;
     if (uid) {
-      // Guardar nickname en Firestore, en colección 'users' con doc id = uid
+      
       await setDoc(doc(this.firestore, 'users', uid), {
         email: email,
         nickname: nickname,
@@ -21,17 +21,14 @@ export class AuthService {
     return userCredential;
   }
 
-  //Inicio de sesión
   async login(email: string, password: string) {
     return await signInWithEmailAndPassword(this.auth, email, password);
   }
 
-  //Restablecer contraseña
   async resetPassword(email: string) {
     return await sendPasswordResetEmail(this.auth, email);
   }
 
-  //Cierre de sesion
   async logout() {
     return await signOut(this.auth);
   }
@@ -39,4 +36,9 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.auth.currentUser;
   }
+
+  getCurrentUser() {
+    return this.auth.currentUser;
+  }
+
 }

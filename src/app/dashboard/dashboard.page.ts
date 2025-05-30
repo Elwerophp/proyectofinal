@@ -5,6 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/stan
 import { AuthService } from '../auth.service';
 import { TaskService } from '../task.service';
 import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.page.html',
@@ -40,8 +41,8 @@ export class DashboardPage implements OnInit {
   }
 
   getPetImageUrl(pet: string): string {
-    const baseFile = this.mapPetNameToFile(pet).replace('_normal', '');
-    return `assets/Dashboard/${baseFile}_${this.petMood}.png`;
+  const baseFile = this.mapPetNameToFile(pet);
+  return `assets/Dashboard/${baseFile}_${this.petMood}.png`;
   }
 
 
@@ -64,22 +65,33 @@ export class DashboardPage implements OnInit {
   }
 
   mapPetNameToFile(selectedPet: string): string {
-    switch (selectedPet) {
-      case 'Gato negro':
-        return 'blackCat_normal';
-      case 'Gato gris':
-        return 'grayCat_normal';
-      case 'Gato naranja':
-        return 'orangeCat_normal';
-      default:
-        return 'grayCat_normal';
-    }
+  switch (selectedPet) {
+    case 'Gato negro':
+      return 'blackCat';
+    case 'Gato gris':
+      return 'grayCat';
+    case 'Gato naranja':
+      return 'orangeCat';
+    default:
+      return 'grayCat';
   }
+}
 
-  async calculatePetMood(): Promise<string> {
-    // Ejemplo simulado: luego puedes revisar si no ha hecho tareas, etc.
-    return 'normal'; // Opciones: 'normal', 'happy', 'sad', 'weird'
-  }
+ async calculatePetMood(): Promise<string> {
+  const result = await this.taskService.getLatestDailyTestResult();
+   console.log('Último resultado test:', result);
+  if (!result) return 'normal';
+
+  const puntos = result.puntos;
+   console.log('Puntos obtenidos:', puntos);
+
+  if (puntos <= 13) return 'sad';
+  else if (puntos <= 23) return 'weird';
+  else return 'happy';
+}
+
+
+
 
   goToDailyTest() {
   this.router.navigate(['/tests-tasks']);
@@ -97,5 +109,25 @@ export class DashboardPage implements OnInit {
     localStorage.setItem('lastDailyTestDate', today);
     this.hasDoneTestToday = true;
   }
+
+  ionViewWillEnter() {
+  this.loadDashboardData();
+}
+
+
+  async loadDashboardData() {
+  const pet = await this.taskService.getUserPet();
+  if (!pet) {
+    this.router.navigate(['/pet-select']);
+    return;
+  }
+  this.userPet = pet;
+
+  const name = await this.taskService.getPetName();
+  this.petName = name || 'Your Pet';
+
+  this.petMood = await this.calculatePetMood();
+}
+
 
 }
