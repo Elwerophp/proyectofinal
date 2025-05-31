@@ -30,9 +30,9 @@ import { TaskService } from '../task.service';
 export class TestsTasksPage implements OnInit {
   answers = {
     happyActivity: '1',
-    energy: 5,
-    motivation: 5,
-    dayRating: 5,
+    energy: 0,
+    motivation: 0,
+    dayRating: 0,
     morningMoods: [] as string[],
     afternoonMoods: [] as string[]
   };
@@ -41,6 +41,9 @@ export class TestsTasksPage implements OnInit {
     'Cansado', 'Feliz', 'Ansioso', 'Nervioso', 'Triste', 'Irritable', 'Molesto', 'Enojado',
     'Abrumado', 'Culpable', 'Aburrido', 'Inseguro', 'Pacífico', 'Optimista', 'Motivado', 'Desmotivado'
   ];
+
+  validationErrors: string[] = [];
+
 
   resultado = 0;
   mensajeEstado = '';
@@ -67,31 +70,61 @@ export class TestsTasksPage implements OnInit {
 
   
   async submitTest() {
-  const puntos =
-    Number(this.answers.happyActivity) +
-    Number(this.answers.energy) +
-    Number(this.answers.motivation) +
-    Number(this.answers.dayRating);
+  this.validationErrors = [];
 
-  console.log('Valores individuales:', {
-    happyActivity: this.answers.happyActivity,
-    energy: this.answers.energy,
-    motivation: this.answers.motivation,
-    dayRating: this.answers.dayRating,
-  });
+  if (!this.answers.happyActivity) {
+    this.validationErrors.push('La pregunta 1 es obligatoria.');
+  }
 
-  console.log('Puntos totales:', puntos);
+  if (this.answers.energy < 1 || this.answers.energy > 6) {
+    this.validationErrors.push('La energía (pregunta 2) debe ser entre 1 y 5.');
+  }
 
+  if (this.answers.morningMoods.length === 0) {
+    this.validationErrors.push('Selecciona al menos un estado de ánimo en la mañana (pregunta 3).');
+  }
+
+  if (this.answers.afternoonMoods.length === 0) {
+    this.validationErrors.push('Selecciona al menos un estado de ánimo en la tarde (pregunta 4).');
+  }
+
+  if (this.answers.motivation < 1 || this.answers.motivation > 6) {
+    this.validationErrors.push('La motivación (pregunta 5) debe ser entre 1 y 5.');
+  }
+
+  if (this.answers.dayRating < 1 || this.answers.dayRating > 6) {
+    this.validationErrors.push('La calificación del día (pregunta 6) debe ser entre 1 y 5.');
+  }
+
+  if (this.validationErrors.length > 0) return;
+
+  const puntos = Number(this.answers.happyActivity) +
+                 Number(this.answers.energy) +
+                 Number(this.answers.motivation) +
+                 Number(this.answers.dayRating);
+
+
+  console.log('=== DEPURACIÓN DAILY TEST ===');
+  console.log('Puntos individuales:');
+  console.log('Actividad feliz:', this.answers.happyActivity);
+  console.log('Energía:', this.answers.energy);
+  console.log('Motivación:', this.answers.motivation);
+  console.log('Calificación del día:', this.answers.dayRating);
+  console.log('Total de puntos:', puntos);
+
+  // Estado del gato ajustado a nuevos valores de puntaje
   this.resultado = puntos;
   this.enviado = true;
 
-  if (puntos <= 13) {
+  if (puntos <= 9) {
     this.mensajeEstado = 'sad';
-  } else if (puntos <= 23) {
-    this.mensajeEstado = 'normal';
+  } else if (puntos <= 14) {
+    this.mensajeEstado = 'weird';
   } else {
     this.mensajeEstado = 'happy';
   }
+
+  console.log('Estado emocional del gato asignado:', this.mensajeEstado);
 
   try {
     await this.taskService.setDailyTestResult({
@@ -104,11 +137,13 @@ export class TestsTasksPage implements OnInit {
       }
     });
 
-    console.log('Resultado del test diario guardado');
+     console.log('Resultado guardado exitosamente en Firestore.');
+
     this.router.navigate(['/dashboard']);
   } catch (error) {
     console.error('Error al guardar el resultado del test diario:', error);
   }
 }
+
 
 }

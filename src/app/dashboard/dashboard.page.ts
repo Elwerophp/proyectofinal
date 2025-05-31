@@ -19,7 +19,8 @@ export class DashboardPage implements OnInit {
   petName: string = '';
   doorIsOpen: boolean = false;
   petMood: string = 'normal';
-  hasDoneTestToday = false; // Inicializamos a falso
+  hasDoneTestToday = false; 
+  moodTimeoutActive = false;
 
 
   constructor(
@@ -42,17 +43,85 @@ export class DashboardPage implements OnInit {
   async loadDashboardData() {
   const pet = await this.taskService.getUserPet();
   if (!pet) {
-    this.router.navigate(['/pet-select']); 
+    this.router.navigate(['/pet-select']);
   }
   this.userPet = pet;
 
   const name = await this.taskService.getPetName();
   this.petName = name || 'Your Pet';
 
-  this.petMood = await this.calculatePetMood();
+  await this.checkIfDailyTestDone();
 
-  await this.checkIfDailyTestDone(); // AHORA ES ASÍ: async y esperando Firestore
+  const result = await this.taskService.getLatestDailyTestResult();
+  const today = new Date().toISOString().slice(0, 10);
+  const resultDate = result?.fecha?.slice(0, 10);
+
+  if (result && resultDate === today) {
+    const moodSetAt = localStorage.getItem('moodSetAt');
+    const moodPoints = localStorage.getItem('moodPoints');
+    
+    if (moodSetAt && moodPoints) {
+      const now = new Date().getTime();
+      const moodTime = parseInt(moodSetAt, 10);
+      const elapsed = now - moodTime;
+
+      if (elapsed < 1 * 60 * 1000) {
+        // Aún está dentro del tiempo de ánimo temporal
+        this.updateMood(parseInt(moodPoints, 10));
+
+        // Solo reiniciamos el temporizador si no está activo
+        if (!this.moodTimeoutActive) {
+          this.moodTimeoutActive = true;
+          setTimeout(() => {
+            this.petMood = 'normal';
+            this.moodTimeoutActive = false;
+          }, 1 * 60 * 1000 - elapsed); // Esperar el tiempo restante
+        }
+
+      } else {
+        this.petMood = 'normal';
+        localStorage.removeItem('moodSetAt');
+        localStorage.removeItem('moodPoints');
+      }
+
+    } else {
+      // No se había guardado el estado temporal
+      this.setTemporaryMood(result.puntos);
+    }
+
+  } else {
+    this.petMood = 'normal';
   }
+  }
+
+  updateMood(puntos: number) {
+  if (puntos <= 9) {
+    this.petMood = 'sad';
+  } else if (puntos <= 14) {
+    this.petMood = 'weird';
+  } else {
+    this.petMood = 'happy';
+  }
+}
+
+
+  setTemporaryMood(puntos: number) {
+  const now = new Date().getTime();
+  localStorage.setItem('moodSetAt', now.toString());
+  localStorage.setItem('moodPoints', puntos.toString());
+
+  this.updateMood(puntos);
+
+  // Solo ponemos el temporizador si aún no existe
+  if (!this.moodTimeoutActive) {
+    this.moodTimeoutActive = true;
+    setTimeout(() => {
+      this.petMood = 'normal';
+      this.moodTimeoutActive = false;
+    }, 1 * 60 * 1000); // 2 minutos
+  }
+}
+
 
   
   getPetImageUrl(pet: string): string {
@@ -101,8 +170,8 @@ export class DashboardPage implements OnInit {
     const puntos = result.puntos;
     console.log('Puntos obtenidos:', puntos);
 
-    if (puntos <= 13) return 'sad';
-    else if (puntos <= 23) return 'weird';
+    if (puntos <= 9) return 'sad';
+    else if (puntos <= 14) return 'weird';
     else return 'happy';
   }
 

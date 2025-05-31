@@ -3,6 +3,11 @@
   <div class="bg-center bg-cover bg-no-repeat bg-[url('https://64.media.tumblr.com/3ebef054c877d03c507aa8c40149908b/6ea0a0e867ebf441-0d/s1280x1920/515b1f92b9830672a913d4f32c3f233b08bf3643.gif')] bg-gray-700 bg-blend-multiply">
     <div class="max-w-2xl mx-auto bg-white bg-opacity-80 p-6 rounded-xl shadow-lg">
       <h1 class="text-2xl mb-6 text-blue-800">Daily Test</h1>
+      <div *ngIf="validationErrors.length > 0" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <ul>
+          <li *ngFor="let error of validationErrors">{{ error }}</li>
+        </ul>
+      </div>
 
       <!-- Pregunta 1 -->
       <label class="block mb-4">1. ¿Hoy has hecho algo que te haga feliz?</label>
@@ -13,8 +18,13 @@
       </select>
 
       <!-- Pregunta 2 -->
-      <label class="block mb-4">2. Del 1 al 10, ¿con cuánta energía te despertaste hoy?</label>
-      <input type="number" [(ngModel)]="answers.energy" min="1" max="10" class="w-full mb-6 p-2 rounded border border-blue-800" />
+      <label class="block mb-4">2. ¿Con cuánta energía te despertaste hoy?</label>
+      <div class="flex justify-between mb-6">
+        <img *ngFor="let i of [1,2,3,4,5]" 
+            [src]="answers.energy >= i ? 'assets/daily-test-1.png' : 'assets/daily-test-0.png'" 
+            (click)="answers.energy = i" 
+            class="w-10 h-10 cursor-pointer transition-transform hover:scale-110" />
+      </div>
 
       <!-- Pregunta 3 -->
       <label class="block mb-4">3. Estado de ánimo en la mañana (elige hasta 5)</label>
@@ -33,12 +43,22 @@
       </div>
 
       <!-- Pregunta 5 -->
-      <label class="block mb-4">5. Del 1 al 10, ¿qué tan motivado te sentiste hoy?</label>
-      <input type="number" [(ngModel)]="answers.motivation" min="1" max="10" class="w-full mb-6 p-2 rounded border border-blue-800" />
+      <label class="block mb-4">5. ¿Qué tan motivado te sentiste hoy?</label>
+      <div class="flex justify-between mb-6">
+        <img *ngFor="let i of [1,2,3,4,5]" 
+            [src]="answers.motivation >= i ? 'assets/daily-test-1.png' : 'assets/daily-test-0.png'" 
+            (click)="answers.motivation = i" 
+            class="w-10 h-10 cursor-pointer transition-transform hover:scale-110" />
+      </div>
 
       <!-- Pregunta 6 -->
-      <label class="block mb-4">6. Del 1 al 10, ¿como calificarías tu día?</label>
-      <input type="number" [(ngModel)]="answers.dayRating" min="1" max="10" class="w-full mb-6 p-2 rounded border border-blue-800" />
+      <label class="block mb-4">6. ¿Cómo calificarías tu día?</label>
+      <div class="flex justify-between mb-6">
+        <img *ngFor="let i of [1,2,3,4,5]" 
+            [src]="answers.dayRating >= i ? 'assets/daily-test-1.png' : 'assets/daily-test-0.png'" 
+            (click)="answers.dayRating = i" 
+            class="w-10 h-10 cursor-pointer transition-transform hover:scale-110" />
+      </div>
 
       <!-- Botón enviar -->
       <button (click)="submitTest()"
