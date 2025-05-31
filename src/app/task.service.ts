@@ -30,6 +30,8 @@ export class TaskService {
     return deleteDoc(taskDoc);
   }
 
+  
+
   async setUserPet(petName: string) {
     const user = this.auth.currentUser;
     if (!user) throw new Error('No authenticated user');
@@ -100,20 +102,46 @@ export class TaskService {
   }
 
   async getLatestDailyTestResult(): Promise<any | null> {
-  const user = this.auth.currentUser;
-  if (!user) return null;
+    const user = this.auth.currentUser;
+    if (!user) return null;
 
-  const dailyTestCollection = collection(this.firestore, `users/${user.uid}/dailyTests`);
+    const dailyTestCollection = collection(this.firestore, `users/${user.uid}/dailyTests`);
 
-  const q = query(dailyTestCollection, orderBy('fecha', 'desc'), limit(1));
+    const q = query(dailyTestCollection, orderBy('fecha', 'desc'), limit(1));
 
-  const snapshot = await getDocs(q);
-  if (!snapshot.empty) {
-    return snapshot.docs[0].data();
-  } else {
-    return null;
+    const snapshot = await getDocs(q);
+    if (!snapshot.empty) {
+      return snapshot.docs[0].data();
+    } else {
+      return null;
+    }
   }
-}
+
+  async getAllDailyTestResults(): Promise<any[]> {
+  const user = this.auth.currentUser;
+  if (!user) throw new Error('No authenticated user');
+
+  const dailyTestsCollection = collection(this.firestore, `users/${user.uid}/dailyTests`);
+  const snapshot = await getDocs(dailyTestsCollection);
+  return snapshot.docs.map(doc => doc.data());
+
+  
+  }
+
+  async getUserNickname(): Promise<string | null> {
+      const user = this.auth.currentUser;
+      if (!user) throw new Error('No authenticated user');
+
+      const userDocRef = doc(this.firestore, `users/${user.uid}`);
+      const userDoc = await getDoc(userDocRef);
+
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        return data['nickname'] || null;
+      }
+
+      return null;
+    }
 
 }
 

@@ -1,49 +1,51 @@
 
- <ion-content [fullscreen]="true" class="p-6 font-press-start">
-  <div class="max-w-2xl mx-auto bg-white bg-opacity-80 p-6 rounded-xl shadow-lg">
-    <h1 class="text-2xl mb-6 text-blue-800">Daily Test</h1>
+ <ion-content [fullscreen]="true" class="p-6 font-press-start ">
+  <div class="bg-center bg-cover bg-no-repeat bg-[url('https://64.media.tumblr.com/3ebef054c877d03c507aa8c40149908b/6ea0a0e867ebf441-0d/s1280x1920/515b1f92b9830672a913d4f32c3f233b08bf3643.gif')] bg-gray-700 bg-blend-multiply">
+    <div class="max-w-2xl mx-auto bg-white bg-opacity-80 p-6 rounded-xl shadow-lg">
+      <h1 class="text-2xl mb-6 text-blue-800">Daily Test</h1>
 
-    <!-- Pregunta 1 -->
-    <label class="block mb-4">1. ¿Hoy has hecho algo que te haga feliz?</label>
-    <select [(ngModel)]="answers.happyActivity" class="w-full mb-6 p-2 rounded border border-blue-800">
-      <option value="3">Sí, dos o más actividades - 3 puntos</option>
-      <option value="2">Sí, una actividad - 2 puntos</option>
-      <option value="1">No, nada - 1 punto</option>
-    </select>
+      <!-- Pregunta 1 -->
+      <label class="block mb-4">1. ¿Hoy has hecho algo que te haga feliz?</label>
+      <select [(ngModel)]="answers.happyActivity" class="w-full mb-6 p-2 rounded border border-blue-800">
+        <option value="3">Sí, dos o más actividades - 3 puntos</option>
+        <option value="2">Sí, una actividad - 2 puntos</option>
+        <option value="1">No, nada - 1 punto</option>
+      </select>
 
-    <!-- Pregunta 2 -->
-    <label class="block mb-4">2. Del 1 al 10, ¿con cuánta energía te despertaste hoy?</label>
-    <input type="number" [(ngModel)]="answers.energy" min="1" max="10" class="w-full mb-6 p-2 rounded border border-blue-800" />
+      <!-- Pregunta 2 -->
+      <label class="block mb-4">2. Del 1 al 10, ¿con cuánta energía te despertaste hoy?</label>
+      <input type="number" [(ngModel)]="answers.energy" min="1" max="10" class="w-full mb-6 p-2 rounded border border-blue-800" />
 
-    <!-- Pregunta 3 -->
-    <label class="block mb-4">3. Estado de ánimo en la mañana (elige hasta 5)</label>
-    <div class="grid grid-cols-2 gap-2 mb-6">
-      <label *ngFor="let mood of moodOptions">
-        <input type="checkbox" [value]="mood" (change)="toggleMood('morning', $event)" /> {{ mood }}
-      </label>
+      <!-- Pregunta 3 -->
+      <label class="block mb-4">3. Estado de ánimo en la mañana (elige hasta 5)</label>
+      <div class="grid grid-cols-2 gap-2 mb-6">
+        <label *ngFor="let mood of moodOptions">
+          <input type="checkbox" [value]="mood" (change)="toggleMood('morning', $event)" /> {{ mood }}
+        </label>
+      </div>
+
+      <!-- Pregunta 4 -->
+      <label class="block mb-4">4. Estado de ánimo en la tarde (elige hasta 5)</label>
+      <div class="grid grid-cols-2 gap-2 mb-6">
+        <label *ngFor="let mood of moodOptions">
+          <input type="checkbox" [value]="mood" (change)="toggleMood('afternoon', $event)" /> {{ mood }}
+        </label>
+      </div>
+
+      <!-- Pregunta 5 -->
+      <label class="block mb-4">5. Del 1 al 10, ¿qué tan motivado te sentiste hoy?</label>
+      <input type="number" [(ngModel)]="answers.motivation" min="1" max="10" class="w-full mb-6 p-2 rounded border border-blue-800" />
+
+      <!-- Pregunta 6 -->
+      <label class="block mb-4">6. Del 1 al 10, ¿como calificarías tu día?</label>
+      <input type="number" [(ngModel)]="answers.dayRating" min="1" max="10" class="w-full mb-6 p-2 rounded border border-blue-800" />
+
+      <!-- Botón enviar -->
+      <button (click)="submitTest()"
+        class="w-full py-2 px-4 text-lg bg-blue-300 border-2 border-blue-800 rounded-lg hover:bg-blue-400">
+        Enviar respuestas
+      </button>
     </div>
-
-    <!-- Pregunta 4 -->
-    <label class="block mb-4">4. Estado de ánimo en la tarde (elige hasta 5)</label>
-    <div class="grid grid-cols-2 gap-2 mb-6">
-      <label *ngFor="let mood of moodOptions">
-        <input type="checkbox" [value]="mood" (change)="toggleMood('afternoon', $event)" /> {{ mood }}
-      </label>
-    </div>
-
-    <!-- Pregunta 5 -->
-    <label class="block mb-4">5. Del 1 al 10, ¿qué tan motivado te sentiste hoy?</label>
-    <input type="number" [(ngModel)]="answers.motivation" min="1" max="10" class="w-full mb-6 p-2 rounded border border-blue-800" />
-
-    <!-- Pregunta 6 -->
-    <label class="block mb-4">6. Del 1 al 10, ¿como calificarías tu día?</label>
-    <input type="number" [(ngModel)]="answers.dayRating" min="1" max="10" class="w-full mb-6 p-2 rounded border border-blue-800" />
-
-    <!-- Botón enviar -->
-    <button (click)="submitTest()"
-      class="w-full py-2 px-4 text-lg bg-blue-300 border-2 border-blue-800 rounded-lg hover:bg-blue-400">
-      Enviar respuestas
-    </button>
   </div>
 </ion-content>
 
