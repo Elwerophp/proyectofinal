@@ -21,6 +21,12 @@ export class DashboardPage implements OnInit {
   petMood: string = 'normal';
   hasDoneTestToday = false; 
   moodTimeoutActive = false;
+  clickCount = 0;
+  playMissionCompleted = false;
+  clickTimerActive = false;
+  isPetPressed = false;
+  isHoveringPet = false;
+
 
 
   constructor(
@@ -40,7 +46,7 @@ export class DashboardPage implements OnInit {
   }
 
 
-  async loadDashboardData() {
+   async loadDashboardData() {
   const pet = await this.taskService.getUserPet();
   if (!pet) {
     this.router.navigate(['/pet-select']);
@@ -94,6 +100,8 @@ export class DashboardPage implements OnInit {
   }
   }
 
+
+
   updateMood(puntos: number) {
   if (puntos <= 9) {
     this.petMood = 'sad';
@@ -102,7 +110,7 @@ export class DashboardPage implements OnInit {
   } else {
     this.petMood = 'happy';
   }
-}
+  }
 
 
   setTemporaryMood(puntos: number) {
@@ -122,7 +130,29 @@ export class DashboardPage implements OnInit {
   }
 }
 
+onPetClick() {
+  if (this.playMissionCompleted || this.clickTimerActive) return;
 
+  this.isPetPressed = true;
+
+  setTimeout(() => {
+    this.isPetPressed = false;
+  }, 150); // Duración corta para mostrar la animación del clic
+
+  this.clickCount++;
+
+  if (this.clickCount >= 10) {
+    this.petMood = 'happy';
+    this.playMissionCompleted = true;
+    this.clickTimerActive = true;
+
+    setTimeout(() => {
+      this.petMood = 'normal';
+      this.clickCount = 0;
+      this.clickTimerActive = false;
+    }, 30000); // 30 segundos
+  }
+}
   
   getPetImageUrl(pet: string): string {
     const baseFile = this.mapPetNameToFile(pet);

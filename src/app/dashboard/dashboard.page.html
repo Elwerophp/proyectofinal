@@ -10,8 +10,16 @@
 
 
     <div class="flex flex-col items-center justify-center h-full z-10 space-y-4">
-      <img [src]="getPetImageUrl(userPet)" alt="Mascota"
-        class="w-120 h-120 md:w-[26rem] md:h-[26rem] drop-shadow-lg transition-transform duration-300 hover:scale-105" />
+      <img
+        [src]="getPetImageUrl(userPet)"
+        (click)="onPetClick()"
+        (mousedown)="isPetPressed = true"
+        (mouseup)="isPetPressed = false"
+        (mouseleave)="isPetPressed = false"
+        alt="Mascota"
+        class="cursor-pointer w-120 h-120 md:w-[26rem] md:h-[26rem] drop-shadow-lg transition-transform duration-200"
+        [class.scale-110]="isPetPressed"
+      />
       
       <p class="text-white text-lg md:text-xl bg-blue-600 bg-opacity-80 px-4 py-2 rounded-lg inline-block shadow-md">
         {{ petName || 'Tu mascota' }} is {{ petMood | titlecase }}
@@ -68,9 +76,16 @@
         <div>
           <p class="text-sm md:text-base">Juega con tu Pawth!</p>
           <div class="w-full h-3 bg-gray-700 rounded-full overflow-hidden mt-1">
-            <div class="bg-green-400 h-full rounded-full" style="width: 0%;"></div>
+            <div
+              class="h-full rounded-full transition-all duration-500"
+              [ngClass]="{
+                'bg-green-400 w-full': playMissionCompleted,
+                'bg-yellow-300 w-0': !playMissionCompleted
+              }">
+            </div>
           </div>
         </div>
+
 
         <div>
           <p class="text-sm md:text-base">Completar misiones diarias</p>
