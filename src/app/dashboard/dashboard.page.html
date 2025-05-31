@@ -19,7 +19,9 @@
       <div class="relative">
           <button
             (click)="goToDailyTest()"
-            class="text-white font-bold font-press-start px-6 py-3 rounded-lg border-4 border-blue-900 bg-blue-400 shadow-md transition-transform hover:scale-105">
+            [disabled]="hasDoneTestToday"
+            [ngClass]="{'opacity-50 cursor-not-allowed bg-gray-500 border-gray-700': hasDoneTestToday, 'hover:scale-105': !hasDoneTestToday}"
+            class="text-white font-bold font-press-start px-6 py-3 rounded-lg border-4 border-blue-900 bg-blue-400 shadow-md transition-transform">
             Daily Test!
           </button>
 
