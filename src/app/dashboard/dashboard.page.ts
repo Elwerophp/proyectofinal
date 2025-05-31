@@ -40,19 +40,18 @@ export class DashboardPage implements OnInit {
 
 
   async loadDashboardData() {
+  const pet = await this.taskService.getUserPet();
+  if (!pet) {
+    this.router.navigate(['/pet-select']); 
+  }
+  this.userPet = pet;
 
-    const pet = await this.taskService.getUserPet();
-    if (!pet) {
-      this.router.navigate(['/pet-select']); 
-    }
-    this.userPet = pet;
+  const name = await this.taskService.getPetName();
+  this.petName = name || 'Your Pet';
 
-    const name = await this.taskService.getPetName();
-    this.petName = name || 'Your Pet'; 
+  this.petMood = await this.calculatePetMood();
 
-    this.petMood = await this.calculatePetMood();
-
-    this.checkIfDailyTestDone();
+  await this.checkIfDailyTestDone(); // AHORA ES ASÍ: async y esperando Firestore
   }
 
   
@@ -86,6 +85,7 @@ export class DashboardPage implements OnInit {
       case 'Gato negro':
         return 'blackCat';
       case 'Gato gris':
+        return 'grayCat';
       case 'Gato naranja':
         return 'orangeCat';
       default:
@@ -114,27 +114,19 @@ export class DashboardPage implements OnInit {
   this.router.navigate(['/tests-tasks']);
   }
 
-  checkIfDailyTestDone() {
-    const lastTestDate = localStorage.getItem('lastDailyTestDate');
-    const today = new Date().toISOString().slice(0, 10); // Formato: YYYY-MM-DD
+  async checkIfDailyTestDone() {
+    const result = await this.taskService.getLatestDailyTestResult();
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
-    // --- LOGS DE DEPURACIÓN ---
-    console.log('--- Verificando Daily Test en Dashboard ---');
-    console.log('lastDailyTestDate (desde localStorage):', lastTestDate);
-    console.log('today (fecha actual generada):', today);
-    console.log('¿Son las fechas iguales (lastDailyTestDate === today)?', lastTestDate === today);
-    // --- FIN LOGS DE DEPURACIÓN ---
+    if (!result || !result.fecha) {
+      this.hasDoneTestToday = false;
+      return;
+    }
 
-    this.hasDoneTestToday = lastTestDate === today;
-    console.log(`Estado final de hasDoneTestToday: ${this.hasDoneTestToday}`);
-    console.log('------------------------------------------');
-  }
+    const resultDate = result.fecha.slice(0, 10); // Asegura comparar solo el día
+    this.hasDoneTestToday = resultDate === today;
 
-
-  markDailyTestAsDone() {
-    const today = new Date().toISOString().slice(0, 10);
-    localStorage.setItem('lastDailyTestDate', today);
-    this.hasDoneTestToday = true;
-    console.log('Test diario marcado como completado para hoy (desde DashboardPage).');
+    console.log('Fecha del último test:', resultDate);
+    console.log('¿Test hecho hoy?:', this.hasDoneTestToday);
   }
 }

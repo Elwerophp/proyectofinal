@@ -67,57 +67,48 @@ export class TestsTasksPage implements OnInit {
 
   
   async submitTest() {
-   
-    const puntos =
-      Number(this.answers.happyActivity) +
-      Number(this.answers.energy) +
-      Number(this.answers.motivation) +
-      Number(this.answers.dayRating);
+  const puntos =
+    Number(this.answers.happyActivity) +
+    Number(this.answers.energy) +
+    Number(this.answers.motivation) +
+    Number(this.answers.dayRating);
 
-    console.log('Valores individuales:', {
-      happyActivity: this.answers.happyActivity,
-      energy: this.answers.energy,
-      motivation: this.answers.motivation,
-      dayRating: this.answers.dayRating,
+  console.log('Valores individuales:', {
+    happyActivity: this.answers.happyActivity,
+    energy: this.answers.energy,
+    motivation: this.answers.motivation,
+    dayRating: this.answers.dayRating,
+  });
+
+  console.log('Puntos totales:', puntos);
+
+  this.resultado = puntos;
+  this.enviado = true;
+
+  if (puntos <= 13) {
+    this.mensajeEstado = 'sad';
+  } else if (puntos <= 23) {
+    this.mensajeEstado = 'normal';
+  } else {
+    this.mensajeEstado = 'happy';
+  }
+
+  try {
+    await this.taskService.setDailyTestResult({
+      puntos,
+      estado: this.mensajeEstado,
+      fecha: new Date().toISOString(),
+      moods: {
+        morning: this.answers.morningMoods,
+        afternoon: this.answers.afternoonMoods
+      }
     });
 
-    console.log('Puntos totales:', puntos);
-
-    this.resultado = puntos;
-    this.enviado = true;
-
-    
-    if (puntos <= 13) {
-      this.mensajeEstado = 'sad';
-    } else if (puntos <= 23) {
-      this.mensajeEstado = 'normal'; 
-    } else {
-      this.mensajeEstado = 'happy';
-    }
-
-    try {
-
-      await this.taskService.setDailyTestResult({
-        puntos,
-        estado: this.mensajeEstado,
-        fecha: new Date().toISOString(),
-        moods: {
-          morning: this.answers.morningMoods,
-          afternoon: this.answers.afternoonMoods
-        }
-      });
-
-      console.log('Resultado del test diario guardado');
-
-
-      const today = new Date().toISOString().slice(0, 10);
-      localStorage.setItem('lastDailyTestDate', today);
-      console.log('Test diario marcado como completado en localStorage.');
-
-
-      this.router.navigate(['/dashboard']);
-    } catch (error) {
-      console.error('Error al guardar el resultado del test diario:', error);
-    }
+    console.log('Resultado del test diario guardado');
+    this.router.navigate(['/dashboard']);
+  } catch (error) {
+    console.error('Error al guardar el resultado del test diario:', error);
   }
+}
+
 }

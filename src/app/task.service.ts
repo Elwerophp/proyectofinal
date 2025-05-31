@@ -82,25 +82,28 @@ export class TaskService {
     estado: string;
     fecha: string;
     moods: { morning: string[]; afternoon: string[] };
-  }) {
+    }) {
     const user = this.auth.currentUser;
     if (!user) throw new Error('No authenticated user');
 
-    // Se guarda en la subcoleccion dailyTest en el usuario :D 
-    const fechaId = data.fecha.slice(0, 10); 
-    const testDocRef = doc(this.firestore, `users/${user.uid}/dailyTest/${fechaId}`);
-    
-    
-    const dataToSave = { ...data, uid: user.uid, fecha: fechaId };
-    
-    await setDoc(testDocRef, dataToSave);
+    const fechaId = data.fecha.slice(0, 10); // YYYY-MM-DD
+
+    const testDocRef = doc(this.firestore, `users/${user.uid}/dailyTests/${fechaId}`);
+
+    const dataToSave = {
+      ...data,
+      uid: user.uid,
+      fecha: fechaId
+    };
+
+    await setDoc(testDocRef, dataToSave, { merge: true });
   }
 
   async getLatestDailyTestResult(): Promise<any | null> {
   const user = this.auth.currentUser;
   if (!user) return null;
 
-  const dailyTestCollection = collection(this.firestore, `users/${user.uid}/dailyTest`);
+  const dailyTestCollection = collection(this.firestore, `users/${user.uid}/dailyTests`);
 
   const q = query(dailyTestCollection, orderBy('fecha', 'desc'), limit(1));
 
