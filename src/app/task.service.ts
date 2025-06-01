@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, addDoc, updateDoc, deleteDoc, doc, collectionData, getDoc, setDoc } from '@angular/fire/firestore';
+import {runTransaction, Firestore, collection, addDoc, updateDoc, deleteDoc, doc, collectionData, getDoc, setDoc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { Auth } from '@angular/fire/auth';
-import { query, where, orderBy, limit, getDocs } from '@angular/fire/firestore';
+import { query, where, orderBy, limit, getDocs} from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -30,7 +32,16 @@ export class TaskService {
     return deleteDoc(taskDoc);
   }
 
-  
+  getUserCoins(userId: string) {
+  const userRef = doc(this.firestore, `users/${userId}`);
+  return getDoc(userRef).then(docSnap => {
+    if (docSnap.exists()) {
+      return docSnap.data();
+    } else {
+      return null;
+    }
+  });
+  }
 
   async setUserPet(petName: string) {
     const user = this.auth.currentUser;
@@ -179,8 +190,26 @@ export class TaskService {
       return data;
     }
 
+    async addCoinsToUser(userId: string, coins: number): Promise<void> {
+      const userRef = doc(this.firestore, `users/${userId}`);
 
-}
+      await runTransaction(this.firestore, async (transaction) => {
+        const userDoc = await transaction.get(userRef);
+        const currentCoins = userDoc.exists() && userDoc.data()['coins'] ? userDoc.data()['coins'] : 0;
+        const newCoins = currentCoins + coins;
+
+        console.log(`🪙 Monedas actuales de ${userId}: ${currentCoins}`);
+        console.log(`➕ Añadiendo: ${coins} monedas`);
+        console.log(`💰 Nuevo total: ${newCoins} monedas`);
+
+        transaction.update(userRef, { coins: newCoins });
+      });
+    }
+
+
+   
+
+} 
 
 
 

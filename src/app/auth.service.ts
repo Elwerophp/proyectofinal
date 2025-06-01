@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, UserCredential } from '@angular/fire/auth';
+import { Auth, user, User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail, UserCredential } from '@angular/fire/auth';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -40,5 +41,6 @@ export class AuthService {
   getCurrentUser() {
     return this.auth.currentUser;
   }
+
 
 }
