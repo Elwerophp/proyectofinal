@@ -143,6 +143,42 @@ export class TaskService {
       return null;
     }
 
+    async setMissionStatus(fecha: string, missionData: { 
+      playWithPet?: boolean; 
+      dailyTestDone?: boolean; 
+      boughtItem?: boolean;
+      allMissionsCompleted?: boolean ;
+    }) {
+      const user = this.auth.currentUser;
+      if (!user) throw new Error('No authenticated user');
+
+      const missionDocRef = doc(this.firestore, `users/${user.uid}/missions/${fecha}`);
+      
+      console.log('🔥 Guardando misión en Firestore:', {
+        uid: user.uid,
+        fecha,
+        missionData,
+      });
+
+      await setDoc(missionDocRef, missionData, { merge: true });
+
+      console.log('✅ Misión guardada exitosamente.');
+    }
+
+
+    async getMissionStatus(fecha: string): Promise<any> {
+      const user = this.auth.currentUser;
+      if (!user) throw new Error('No authenticated user');
+
+      const missionDocRef = doc(this.firestore, `users/${user.uid}/missions/${fecha}`);
+      const missionSnap = await getDoc(missionDocRef);
+
+      const data = missionSnap.exists() ? missionSnap.data() : null;
+      console.log('📥 Estado de misión recuperado:', data);
+
+      return data;
+    }
+
 
 }
 

@@ -5,6 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/stan
 import { AuthService } from '../auth.service';
 import { TaskService } from '../task.service';
 import { Router } from '@angular/router';
+import { getDoc, doc } from 'firebase/firestore';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,10 +23,15 @@ export class DashboardPage implements OnInit {
   hasDoneTestToday = false; 
   moodTimeoutActive = false;
   clickCount = 0;
-  playMissionCompleted = false;
   clickTimerActive = false;
   isPetPressed = false;
   isHoveringPet = false;
+  
+  playMissionCompleted = false;
+  dailyTestDone = false;
+  boughtItem = false;
+  allMissionsCompleted = false;
+
 
 
 
@@ -98,6 +104,7 @@ export class DashboardPage implements OnInit {
   } else {
     this.petMood = 'normal';
   }
+  await this.loadMissionStatus();
   }
 
 
@@ -130,29 +137,66 @@ export class DashboardPage implements OnInit {
   }
 }
 
-onPetClick() {
-  if (this.playMissionCompleted || this.clickTimerActive) return;
+  async onPetClick() {
+    if (this.playMissionCompleted || this.clickTimerActive) return;
 
-  this.isPetPressed = true;
+      this.isPetPressed = true;
 
-  setTimeout(() => {
-    this.isPetPressed = false;
-  }, 150); // Duración corta para mostrar la animación del clic
+      setTimeout(() => {
+        this.isPetPressed = false;
+      }, 150); // animación de clic
 
-  this.clickCount++;
+      this.clickCount++;
 
-  if (this.clickCount >= 10) {
-    this.petMood = 'happy';
-    this.playMissionCompleted = true;
-    this.clickTimerActive = true;
+      if (this.clickCount >= 10) {
+        this.petMood = 'happy';
+        this.playMissionCompleted = true;
+        this.clickTimerActive = true;
 
-    setTimeout(() => {
-      this.petMood = 'normal';
-      this.clickCount = 0;
-      this.clickTimerActive = false;
-    }, 30000); // 30 segundos
+        // ✅ Marca misión como completada
+        await this.taskService.setMissionStatus(this.today, {
+          playWithPet: true,
+        });
+        
+        // ✅ Revisa si todas las misiones están completadas
+        await this.checkAllMissions();
+
+        setTimeout(() => {
+          this.petMood = 'normal';
+          this.clickCount = 0;
+          this.clickTimerActive = false;
+        }, 30000);
+      }
+  }
+
+   async loadMissionStatus() {
+    const status = await this.taskService.getMissionStatus(this.today);
+     console.log('📘 Estado de misiones del día:', status);
+    this.playMissionCompleted = !!status?.playWithPet;
+    this.dailyTestDone = !!status?.dailyTestDone;
+    this.boughtItem = !!status?.boughtItem;
+    this.allMissionsCompleted = !!status?.allMissionsCompleted;
+  }
+
+  get today(): string {
+      return new Date().toISOString().slice(0, 10);
+  }
+
+  async checkAllMissions() {
+  if (
+    this.playMissionCompleted &&
+    this.dailyTestDone &&
+    this.boughtItem &&
+    !this.allMissionsCompleted
+  ) {
+    console.log('🎯 ¡Todas las misiones completadas! Guardando en Firestore...');
+    this.allMissionsCompleted = true;
+    await this.taskService.setMissionStatus(this.today, {
+      allMissionsCompleted: true,
+    });
   }
 }
+
   
   getPetImageUrl(pet: string): string {
     const baseFile = this.mapPetNameToFile(pet);
@@ -214,18 +258,32 @@ onPetClick() {
   }
 
   async checkIfDailyTestDone() {
-    const result = await this.taskService.getLatestDailyTestResult();
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const result = await this.taskService.getLatestDailyTestResult();
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 
-    if (!result || !result.fecha) {
-      this.hasDoneTestToday = false;
-      return;
-    }
-
-    const resultDate = result.fecha.slice(0, 10); // Asegura comparar solo el día
-    this.hasDoneTestToday = resultDate === today;
-
-    console.log('Fecha del último test:', resultDate);
-    console.log('¿Test hecho hoy?:', this.hasDoneTestToday);
+  if (!result || !result.fecha) {
+    this.hasDoneTestToday = false;
+    return;
   }
+
+  const resultDate = result.fecha.slice(0, 10); // Asegura comparar solo el día
+  this.hasDoneTestToday = resultDate === today;
+
+  console.log('Fecha del último test:', resultDate);
+  console.log('¿Test hecho hoy?:', this.hasDoneTestToday);
+
+  // ✅ Si ya hizo el test hoy, guarda eso como misión completada
+  if (this.hasDoneTestToday) {
+    await this.taskService.setMissionStatus(today, {
+      dailyTestDone: true
+    });
+
+    // Opcional: recarga estado de misiones
+    await this.loadMissionStatus();
+
+    // También podrías verificar si ya se completaron todas las misiones
+    await this.checkAllMissions();
+  }
+}
+
 }
