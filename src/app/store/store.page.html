@@ -32,9 +32,15 @@
           <ng-container *ngIf="ownedItems.includes(item.id); else buyBtn">
             <button 
               class="mt-auto bg-green-400 hover:bg-green-500 text-black font-semibold py-2 px-6 rounded-lg text-lg"
-              [disabled]="equippedItem === item.id"
+              *ngIf="equippedItem !== item.id"
               (click)="equipItem(item)">
-              {{ equippedItem === item.id ? 'Equipado' : 'Equipar' }}
+              Equipar
+            </button>
+            <button 
+              class="mt-auto bg-red-400 hover:bg-red-500 text-black font-semibold py-2 px-6 rounded-lg text-lg"
+              *ngIf="equippedItem === item.id"
+              (click)="unequipItem()">
+              Des-equipar
             </button>
           </ng-container>
           <ng-template #buyBtn>

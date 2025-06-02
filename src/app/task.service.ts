@@ -154,26 +154,28 @@ export class TaskService {
       return null;
     }
 
-    async setMissionStatus(fecha: string, missionData: { 
-      playWithPet?: boolean; 
-      dailyTestDone?: boolean; 
-      boughtItem?: boolean;
-      allMissionsCompleted?: boolean ;
-    }) {
+    async setMissionStatus(date: string, status: any) {
       const user = this.auth.currentUser;
       if (!user) throw new Error('No authenticated user');
 
-      const missionDocRef = doc(this.firestore, `users/${user.uid}/missions/${fecha}`);
-      
-      console.log('🔥 Guardando misión en Firestore:', {
-        uid: user.uid,
-        fecha,
-        missionData,
-      });
+      const missionDocRef = doc(this.firestore, `users/${user.uid}/missions/${date}`);
+      const missionSnap = await getDoc(missionDocRef);
+      const prevData = missionSnap.exists() ? missionSnap.data() : {};
 
-      await setDoc(missionDocRef, missionData, { merge: true });
+      // Solo suma monedas si la misión no estaba completada antes
+      if (!prevData['boughtItem'] && status['boughtItem']) {
+        // Sumar 15 monedas al usuario
+        const userDocRef = doc(this.firestore, `users/${user.uid}`);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          const currentCoins = data['coins'] || 0;
+          await updateDoc(userDocRef, { coins: currentCoins + 15 });
+        }
+      }
 
-      console.log('✅ Misión guardada exitosamente.');
+      // Actualiza el estado de la misión
+      await setDoc(missionDocRef, { ...prevData, ...status }, { merge: true });
     }
 
 
@@ -206,8 +208,18 @@ export class TaskService {
       });
     }
 
-
-   
+    async rewardCoinsForMission() {
+      const user = this.auth.currentUser;
+      if (user) {
+        const userDocRef = doc(this.firestore, `users/${user.uid}`);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          const currentCoins = data['coins'] || 0;
+          await updateDoc(userDocRef, { coins: currentCoins + 15 });
+        }
+      }
+    }
 
 } 
 

@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { Firestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { AlertController } from '@ionic/angular';
+import { TaskService } from '../task.service'; // Asegúrate de importar tu servicio
 
 interface StoreItem {
   id: string;
@@ -36,11 +37,17 @@ export class StorePage implements OnInit {
     private router: Router,
     private firestore: Firestore,
     private auth: Auth,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private taskService: TaskService // <-- agrega esto
   ) {}
 
   async ngOnInit() {
     await this.loadUserData();
+  }
+
+  async ionViewWillEnter() {
+    await this.loadUserData();
+    await this.loadCoins();
   }
 
   async loadUserData() {
@@ -53,6 +60,17 @@ export class StorePage implements OnInit {
       this.coins = data['coins'] || 0;
       this.ownedItems = data['items'] || [];
       this.equippedItem = data['equippedItem'] || '';
+    }
+  }
+
+  async loadCoins() {
+    const user = this.auth.currentUser;
+    if (!user) return;
+    const userDocRef = doc(this.firestore, `users/${user.uid}`);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+      this.coins = data['coins'] || 0;
     }
   }
 
@@ -87,8 +105,12 @@ export class StorePage implements OnInit {
       items: arrayUnion(item.id)
     });
 
-    this.coins -= item.price;
-    this.ownedItems.push(item.id);
+    // Marca la misión y da la recompensa SOLO aquí
+    const today = new Date().toISOString().slice(0, 10);
+    await this.taskService.setMissionStatus(today, { boughtItem: true });
+
+    // Vuelve a cargar los datos del usuario desde Firestore para reflejar el nuevo saldo
+    await this.loadUserData();
 
     const alert = await this.alertController.create({
       header: '¡Compra exitosa!',
@@ -113,6 +135,25 @@ export class StorePage implements OnInit {
     const alert = await this.alertController.create({
       header: '¡Equipado!',
       message: `Has equipado ${item.name}.`,
+      buttons: ['OK'],
+    });
+    await alert.present();
+  }
+
+  async unequipItem() {
+    const user = this.auth.currentUser;
+    if (!user) return;
+
+    const userDocRef = doc(this.firestore, `users/${user.uid}`);
+    await updateDoc(userDocRef, {
+      equippedItem: ''
+    });
+
+    this.equippedItem = '';
+
+    const alert = await this.alertController.create({
+      header: 'Des-equipado',
+      message: 'Has des-equipado el ítem.',
       buttons: ['OK'],
     });
     await alert.present();

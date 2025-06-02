@@ -33,8 +33,8 @@ export class DashboardPage implements OnInit {
   boughtItem = false;
   allMissionsCompleted = false;
   coins: number = 0;
-
-
+  equippedItem: string = '';
+  equippedItems: string[] = []; // array de ids de cosméticos equipados
 
   constructor(
     private taskService: TaskService,
@@ -48,12 +48,14 @@ export class DashboardPage implements OnInit {
   async ngOnInit() {
     await this.loadDashboardData();
     await this.loadCoins();
+    await this.loadUserData();
   }
 
 
   async ionViewWillEnter() {
   await this.loadDashboardData();
   await this.loadCoins();
+  await this.loadUserData();
   }
 
 
@@ -299,6 +301,35 @@ async loadCoins() {
   if (userDoc.exists()) {
     const data = userDoc.data();
     this.coins = data['coins'] || 0;
+  }
+}
+
+// Cargar los cosméticos equipados desde Firestore
+async loadUserData() {
+  const user = this.auth.currentUser;
+  if (!user) return;
+  const userDocRef = doc(this.firestore, `users/${user.uid}`);
+  const userDoc = await getDoc(userDocRef);
+  if (userDoc.exists()) {
+    const data = userDoc.data();
+    this.equippedItems = data['equippedItems'] || [];
+    // ...otros datos...
+  }
+}
+
+// Devuelve la clase CSS para cada asset según el tipo
+getAssetClass(assetId: string): string {
+  switch (assetId) {
+    case 'crown':
+      return 'top-0 left-1/2 transform -translate-x-1/2 w-32 h-32';
+    case 'strawberryhat':
+      return 'top-2 left-1/2 transform -translate-x-1/2 w-28 h-28';
+    case 'sunglasses':
+      return 'top-16 left-1/2 transform -translate-x-1/2 w-24 h-12';
+    case 'tophat':
+      return 'top-0 left-1/2 transform -translate-x-1/2 w-32 h-32';
+    default:
+      return 'top-0 left-1/2 transform -translate-x-1/2 w-32 h-32';
   }
 }
 }

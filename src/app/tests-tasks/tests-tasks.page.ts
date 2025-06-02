@@ -1,4 +1,3 @@
-
 import { Router } from '@angular/router';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonLabel, IonButton, IonInput } from '@ionic/angular/standalone';
 import { Component, OnInit } from '@angular/core';
@@ -8,6 +7,9 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { TaskService } from '../task.service';
+import { doc, getDoc, updateDoc } from '@angular/fire/firestore';
+import { Auth } from '@angular/fire/auth';
+import { Firestore } from '@angular/fire/firestore';
 
 
 @Component({
@@ -49,7 +51,12 @@ export class TestsTasksPage implements OnInit {
   mensajeEstado = '';
   enviado = false;
 
-  constructor(private taskService: TaskService, private router: Router) {}
+  constructor(
+    private taskService: TaskService,
+    private router: Router,
+    private auth: Auth,
+    private firestore: Firestore // <-- Agrega esto
+  ) {}
 
   ngOnInit(): void {}
 
@@ -138,6 +145,18 @@ export class TestsTasksPage implements OnInit {
     });
 
      console.log('Resultado guardado exitosamente en Firestore.');
+
+    // Sumar 50 monedas al usuario
+    const user = this.auth.currentUser;
+    if (user) {
+      const userDocRef = doc(this.firestore, `users/${user.uid}`); // Usa this.firestore aquí
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        const currentCoins = data['coins'] || 0;
+        await updateDoc(userDocRef, { coins: currentCoins + 50 });
+      }
+    }
 
     this.router.navigate(['/dashboard']);
   } catch (error) {
