@@ -5,7 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/stan
 import { AuthService } from '../auth.service';
 import { TaskService } from '../task.service';
 import { Router } from '@angular/router';
-import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 
 @Component({
@@ -154,8 +154,9 @@ export class DashboardPage implements OnInit {
     this.clickTimerActive = true;
     if (!this.playMissionCompleted) {
       this.playMissionCompleted = true;
+      // Marca la misión como completada y da monedas
       await this.taskService.setMissionStatus(this.today, { playWithPet: true });
-      await this.checkAllMissions();
+      await this.checkAllMissions?.();
     }
     setTimeout(() => {
       this.petMood = 'normal';
@@ -321,4 +322,41 @@ getAssetClass(assetId: string): string {
       return 'top-0 left-1/2 transform -translate-x-1/2 w-32 h-32';
   }
 }
+async setMissionStatus(date: string, status: any) {
+  const user = this.auth.currentUser;
+  if (!user) throw new Error('No authenticated user');
+
+  const missionDocRef = doc(this.firestore, `users/${user.uid}/missions/${date}`);
+  const missionSnap = await getDoc(missionDocRef);
+  const prevData = missionSnap.exists() ? missionSnap.data() : {};
+
+  // Por cada misión, si se completa por primera vez, suma monedas
+  if (status['playWithPet'] && !prevData['playWithPet']) {
+    await this.addCoins(user.uid, 15);
+  }
+  if (status['dailyTestDone'] && !prevData['dailyTestDone']) {
+    await this.addCoins(user.uid, 15);
+  }
+  if (status['boughtItem'] && !prevData['boughtItem']) {
+    await this.addCoins(user.uid, 15);
+  }
+  if (status['allMissionsCompleted'] && !prevData['allMissionsCompleted']) {
+    await this.addCoins(user.uid, 15);
+  }
+
+  // Actualiza el estado de la misión
+  await setDoc(missionDocRef, { ...prevData, ...status }, { merge: true });
 }
+
+// Suma monedas al usuario
+async addCoins(uid: string, amount: number) {
+  const userDocRef = doc(this.firestore, `users/${uid}`);
+  const userDoc = await getDoc(userDocRef);
+  if (userDoc.exists()) {
+    const data = userDoc.data();
+    const currentCoins = data['coins'] || 0;
+    await updateDoc(userDocRef, { coins: currentCoins + amount });
+  }
+} }
+
+
