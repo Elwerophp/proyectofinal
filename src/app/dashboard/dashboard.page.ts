@@ -340,11 +340,21 @@ async setMissionStatus(date: string, status: any) {
   if (status['boughtItem'] && !prevData['boughtItem']) {
     await this.addCoins(user.uid, 15);
   }
-  if (status['allMissionsCompleted'] && !prevData['allMissionsCompleted']) {
+
+  // Lógica para completar la cuarta misión automáticamente
+  const completedPlay = status['playWithPet'] || prevData['playWithPet'];
+  const completedTest = status['dailyTestDone'] || prevData['dailyTestDone'];
+  const completedBuy = status['boughtItem'] || prevData['boughtItem'];
+  const alreadyAllDone = status['allMissionsCompleted'] || prevData['allMissionsCompleted'];
+
+  if (completedPlay && completedTest && completedBuy && !alreadyAllDone) {
+    // Marca la cuarta misión y da 15 monedas
+    await setDoc(missionDocRef, { ...prevData, ...status, allMissionsCompleted: true }, { merge: true });
     await this.addCoins(user.uid, 15);
+    return;
   }
 
-  // Actualiza el estado de la misión
+  // Actualiza el estado de la misión normalmente
   await setDoc(missionDocRef, { ...prevData, ...status }, { merge: true });
 }
 
