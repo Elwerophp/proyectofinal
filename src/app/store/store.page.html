@@ -14,57 +14,36 @@
   
     <!-- Contenedor centrado vertical y horizontal -->
     <div class="flex flex-col items-center justify-center min-h-[calc(100vh-6rem)] px-4">
+      <!-- Monedas en la esquina superior derecha -->
+      <div class="fixed top-4 right-4 z-20 flex items-center bg-yellow-200 bg-opacity-80 rounded-full px-4 py-2 shadow-lg">
+        <img src="assets/catcoin.png" alt="catcoin" class="w-6 h-6 mr-2" />
+        <span class="text-lg font-bold text-gray-800">{{ coins }}</span>
+      </div>
+
+      <!-- Ítems de la tienda -->
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 justify-center">
-        <!-- Ítem 1 -->
-        <div class="bg-blue-200 bg-opacity-60 rounded-xl shadow-md p-4 flex flex-col items-center w-72 h-72 mx-auto transform transition-transform duration-300 hover:scale-105">
-          <img src="assets/Shop/crown.png" alt="Crown" class="w-32 h-32 object-contain mb-2" />
-          <h2 class="text-xl font-semibold text-[#333] text-center">Crown</h2>
+        <div *ngFor="let item of items" class="bg-blue-200 bg-opacity-60 rounded-xl shadow-md p-4 flex flex-col items-center w-72 h-72 mx-auto transform transition-transform duration-300 hover:scale-105">
+          <img [src]="item.image" [alt]="item.name" class="w-32 h-32 object-contain mb-2" />
+          <h2 class="text-xl font-semibold text-[#333] text-center">{{ item.name }}</h2>
           <div class="flex items-center gap-2 mt-1">
             <img src="assets/catcoin.png" alt="catcoin" class="w-6 h-6" />
-            <span class="text-lg font-medium">50</span>
+            <span class="text-lg font-medium">{{ item.price }}</span>
           </div>
-          <button class="mt-auto bg-yellow-300 hover:bg-yellow-400 text-black font-semibold py-2 px-6 rounded-lg text-lg">
-            Comprar
-          </button>
-        </div>
-
-        <!-- Ítem 2 -->
-        <div class="bg-blue-200 bg-opacity-60 rounded-xl shadow-md p-4 flex flex-col items-center w-72 h-72 mx-auto transform transition-transform duration-300 hover:scale-105">
-          <img src="assets/Shop/strawberryhat.png" alt="Strawberry Hat" class="w-24 h-24 object-contain mb-2" />
-          <h2 class="text-xl font-semibold text-[#333] text-center">Strawberry Hat</h2>
-          <div class="flex items-center gap-2 mt-1">
-            <img src="assets/catcoin.png" alt="catcoin" class="w-6 h-6" />
-            <span class="text-lg font-medium">35</span>
-          </div>
-          <button class="mt-auto bg-yellow-300 hover:bg-yellow-400 text-black font-semibold py-2 px-6 rounded-lg text-lg">
-            Comprar
-          </button>
-        </div>
-
-        <!-- Ítem 3 -->
-        <div class="bg-blue-200 bg-opacity-60 rounded-xl shadow-md p-4 flex flex-col items-center w-72 h-72 mx-auto transform transition-transform duration-300 hover:scale-105">
-          <img src="assets/Shop/sunglasses.png" alt="Sunglasses" class="w-32 h-32 object-contain mb-2" />
-          <h2 class="text-xl font-semibold text-[#333] text-center">Sunglasses</h2>
-          <div class="flex items-center gap-2 mt-1">
-            <img src="assets/catcoin.png" alt="catcoin" class="w-6 h-6" />
-            <span class="text-lg font-medium">40</span>
-          </div>
-          <button class="mt-auto bg-yellow-300 hover:bg-yellow-400 text-black font-semibold py-2 px-6 rounded-lg text-lg">
-            Comprar
-          </button>
-        </div>
-
-        <!-- Ítem 4 -->
-        <div class="bg-blue-200 bg-opacity-60 rounded-xl shadow-md p-4 flex flex-col items-center w-72 h-72 mx-auto transform transition-transform duration-300 hover:scale-105">
-          <img src="assets/Shop/tophat.png" alt="Top Hat" class="w-32 h-32 object-contain mb-2" />
-          <h2 class="text-xl font-semibold text-[#333] text-center">Top Hat</h2>
-          <div class="flex items-center gap-2 mt-1">
-            <img src="assets/catcoin.png" alt="catcoin" class="w-6 h-6" />
-            <span class="text-lg font-medium">45</span>
-          </div>
-          <button class="mt-auto bg-yellow-300 hover:bg-yellow-400 text-black font-semibold py-2 px-6 rounded-lg text-lg">
-            Comprar
-          </button>
+          <ng-container *ngIf="ownedItems.includes(item.id); else buyBtn">
+            <button 
+              class="mt-auto bg-green-400 hover:bg-green-500 text-black font-semibold py-2 px-6 rounded-lg text-lg"
+              [disabled]="equippedItem === item.id"
+              (click)="equipItem(item)">
+              {{ equippedItem === item.id ? 'Equipado' : 'Equipar' }}
+            </button>
+          </ng-container>
+          <ng-template #buyBtn>
+            <button 
+              class="mt-auto bg-yellow-300 hover:bg-yellow-400 text-black font-semibold py-2 px-6 rounded-lg text-lg"
+              (click)="buyItem(item)">
+              Comprar
+            </button>
+          </ng-template>
         </div>
       </div>
 
@@ -74,12 +53,6 @@
           Ir a Dashboard
         </a>
       </div>
-    </div>
-
-    <!-- Monedas en la esquina superior derecha -->
-    <div class="fixed top-4 right-4 z-20 flex items-center bg-yellow-200 bg-opacity-80 rounded-full px-4 py-2 shadow-lg">
-      <img src="assets/catcoin.png" alt="catcoin" class="w-6 h-6 mr-2" />
-      <span class="text-lg font-bold text-gray-800">{{ coins }}</span>
     </div>
   </div>
 </ion-content>
