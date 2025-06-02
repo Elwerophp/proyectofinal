@@ -5,7 +5,8 @@ import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/stan
 import { AuthService } from '../auth.service';
 import { TaskService } from '../task.service';
 import { Router } from '@angular/router';
-import { getDoc, doc } from 'firebase/firestore';
+import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Auth } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,24 +32,28 @@ export class DashboardPage implements OnInit {
   dailyTestDone = false;
   boughtItem = false;
   allMissionsCompleted = false;
-
+  coins: number = 0;
 
 
 
   constructor(
     private taskService: TaskService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private firestore: Firestore,
+    private auth: Auth
   ) { }
 
  
   async ngOnInit() {
     await this.loadDashboardData();
+    await this.loadCoins();
   }
 
 
   async ionViewWillEnter() {
   await this.loadDashboardData();
+  await this.loadCoins();
   }
 
 
@@ -286,4 +291,14 @@ export class DashboardPage implements OnInit {
   }
 }
 
+async loadCoins() {
+  const user = this.auth.currentUser;
+  if (!user) return;
+  const userDocRef = doc(this.firestore, `users/${user.uid}`);
+  const userDoc = await getDoc(userDocRef);
+  if (userDoc.exists()) {
+    const data = userDoc.data();
+    this.coins = data['coins'] || 0;
+  }
+}
 }

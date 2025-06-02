@@ -8,13 +8,11 @@
       {{ petName }}'s room
     </div>
 
-    <!--
-    <div class="absolute top-4 right-4 bg-yellow-400 bg-opacity-90 text-black font-bold px-4 py-2 rounded shadow-md flex items-center space-x-2 z-40 select-none">
-      <img src="assets/catcoin.png" alt="Monedas" class="w-6 h-6" />
-      <span>{{ coins }}</span>
-    </div> 
-    -->
-
+    <!-- Monedas en la esquina superior derecha -->
+    <div class="absolute top-4 right-4 z-40 flex items-center bg-yellow-200 bg-opacity-80 rounded-full px-4 py-2 shadow-lg">
+      <img src="assets/catcoin.png" alt="catcoin" class="w-6 h-6 mr-2" />
+      <span class="text-lg font-bold text-gray-800">{{ coins }}</span>
+    </div>
 
     <div class="flex flex-col items-center justify-center h-full z-10 space-y-4">
       <img
