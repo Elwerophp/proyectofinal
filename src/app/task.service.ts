@@ -162,22 +162,23 @@ export class TaskService {
       const missionSnap = await getDoc(missionDocRef);
       const prevData = missionSnap.exists() ? missionSnap.data() : {};
 
-      // Solo suma monedas si la misión no estaba completada antes
-      if (!prevData['boughtItem'] && status['boughtItem']) {
-        // Sumar 15 monedas al usuario
-        const userDocRef = doc(this.firestore, `users/${user.uid}`);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          const currentCoins = data['coins'] || 0;
-          await updateDoc(userDocRef, { coins: currentCoins + 15 });
-        }
+      // Por cada misión, si se completa por primera vez, suma monedas
+      if (status['boughtItem'] && !prevData['boughtItem']) {
+        await this.addCoins(user.uid, 15);
       }
-
-      // Actualiza el estado de la misión
+      // ... (igual para las otras misiones si quieres)
       await setDoc(missionDocRef, { ...prevData, ...status }, { merge: true });
     }
 
+    async addCoins(uid: string, amount: number) {
+      const userDocRef = doc(this.firestore, `users/${uid}`);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        const currentCoins = data['coins'] || 0;
+        await updateDoc(userDocRef, { coins: currentCoins + amount });
+      }
+    }
 
     async getMissionStatus(fecha: string): Promise<any> {
       const user = this.auth.currentUser;
