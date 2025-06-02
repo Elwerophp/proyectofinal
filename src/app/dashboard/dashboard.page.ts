@@ -145,36 +145,25 @@ export class DashboardPage implements OnInit {
 }
 
   async onPetClick() {
-    if (this.playMissionCompleted || this.clickTimerActive) return;
-
-      this.isPetPressed = true;
-
-      setTimeout(() => {
-        this.isPetPressed = false;
-      }, 150); // animación de clic
-
-      this.clickCount++;
-
-      if (this.clickCount >= 10) {
-        this.petMood = 'happy';
-        this.playMissionCompleted = true;
-        this.clickTimerActive = true;
-
-        // ✅ Marca misión como completada
-        await this.taskService.setMissionStatus(this.today, {
-          playWithPet: true,
-        });
-        
-        // ✅ Revisa si todas las misiones están completadas
-        await this.checkAllMissions();
-
-        setTimeout(() => {
-          this.petMood = 'normal';
-          this.clickCount = 0;
-          this.clickTimerActive = false;
-        }, 30000);
-      }
+  if (this.clickTimerActive) return;
+  this.isPetPressed = true;
+  setTimeout(() => { this.isPetPressed = false; }, 150);
+  this.clickCount++;
+  if (this.clickCount >= 10) {
+    this.petMood = 'happy';
+    this.clickTimerActive = true;
+    if (!this.playMissionCompleted) {
+      this.playMissionCompleted = true;
+      await this.taskService.setMissionStatus(this.today, { playWithPet: true });
+      await this.checkAllMissions();
+    }
+    setTimeout(() => {
+      this.petMood = 'normal';
+      this.clickCount = 0;
+      this.clickTimerActive = false;
+    }, 30000);
   }
+}
 
    async loadMissionStatus() {
     const status = await this.taskService.getMissionStatus(this.today);

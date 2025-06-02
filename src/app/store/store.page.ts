@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
-import { Firestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from '@angular/fire/firestore';
+import { Firestore, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { AlertController } from '@ionic/angular';
-import { TaskService } from '../task.service'; // Asegúrate de importar tu servicio
+import { TaskService } from '../task.service';
 
 interface StoreItem {
   id: string;
@@ -25,7 +25,7 @@ interface StoreItem {
 export class StorePage implements OnInit {
   coins: number = 0;
   ownedItems: string[] = [];
-  equippedItem: string = '';
+  equippedItems: string[] = [];
   items: StoreItem[] = [
     { id: 'crown', name: 'Crown', price: 50, image: 'assets/Shop/crown.png' },
     { id: 'strawberryhat', name: 'Strawberry Hat', price: 35, image: 'assets/Shop/strawberryhat.png' },
@@ -38,7 +38,7 @@ export class StorePage implements OnInit {
     private firestore: Firestore,
     private auth: Auth,
     private alertController: AlertController,
-    private taskService: TaskService // <-- agrega esto
+    private taskService: TaskService
   ) {}
 
   async ngOnInit() {
@@ -59,7 +59,7 @@ export class StorePage implements OnInit {
       const data = userDoc.data();
       this.coins = data['coins'] || 0;
       this.ownedItems = data['items'] || [];
-      this.equippedItem = data['equippedItem'] || '';
+      this.equippedItems = data['equippedItems'] || [];
     }
   }
 
@@ -75,6 +75,17 @@ export class StorePage implements OnInit {
   }
 
   async buyItem(item: StoreItem) {
+    if (this.coins < item.price) {
+      const alert = await this.alertController.create({
+        header: 'Monedas insuficientes',
+        message: 'No tienes suficientes monedas para comprar este ítem.',
+        buttons: ['OK'],
+      });
+      await alert.present();
+      return;
+    }
+
+    // Actualiza monedas e ítems en Firestore
     const user = this.auth.currentUser;
     if (!user) return;
 
@@ -82,16 +93,6 @@ export class StorePage implements OnInit {
       const alert = await this.alertController.create({
         header: 'Ya comprado',
         message: 'Ya tienes este ítem.',
-        buttons: ['OK'],
-      });
-      await alert.present();
-      return;
-    }
-
-    if (this.coins < item.price) {
-      const alert = await this.alertController.create({
-        header: 'Monedas insuficientes',
-        message: 'No tienes suficientes monedas para comprar este ítem.',
         buttons: ['OK'],
       });
       await alert.present();
@@ -127,10 +128,10 @@ export class StorePage implements OnInit {
 
     const userDocRef = doc(this.firestore, `users/${user.uid}`);
     await updateDoc(userDocRef, {
-      equippedItem: item.id
+      equippedItems: arrayUnion(item.id)
     });
 
-    this.equippedItem = item.id;
+    await this.loadUserData();
 
     const alert = await this.alertController.create({
       header: '¡Equipado!',
@@ -140,16 +141,16 @@ export class StorePage implements OnInit {
     await alert.present();
   }
 
-  async unequipItem() {
+  async unequipItem(item: StoreItem) {
     const user = this.auth.currentUser;
     if (!user) return;
 
     const userDocRef = doc(this.firestore, `users/${user.uid}`);
     await updateDoc(userDocRef, {
-      equippedItem: ''
+      equippedItems: arrayRemove(item.id)
     });
 
-    this.equippedItem = '';
+    await this.loadUserData();
 
     const alert = await this.alertController.create({
       header: 'Des-equipado',
